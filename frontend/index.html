@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>TRAXION AI | Road Posture & Accident Intelligence</title>
+  
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Three.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Times New Roman"', 'Times', 'Georgia', 'serif'],
+            serif: ['"Times New Roman"', 'Times', 'Georgia', 'serif'],
+            mono: ['"Times New Roman"', 'Times', 'Georgia', 'serif']
+          },
+          colors: {
+            void: '#0e1117',
+            surface: '#141822',
+            card: '#1a202c',
+            border: '#2a3242',
+            road: '#151922',
+            cone: { 400: '#d97706', 500: '#b45309', 600: '#92400e' }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * {
+      font-family: 'Times New Roman', Times, Georgia, serif !important;
+    }
+
+    body {
+      background-color: #0e1117;
+      color: #e2e8f0;
+      overflow-x: hidden;
+      font-family: 'Times New Roman', Times, Georgia, serif !important;
+    }
+
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #0e1117; }
+    ::-webkit-scrollbar-thumb { background: #2a3242; border-radius: 2px; }
+    ::-webkit-scrollbar-thumb:hover { background: #b45309; }
+
+    /* Road Striping */
+    .road-stripe {
+      background: repeating-linear-gradient(
+        45deg,
+        #b45309,
+        #b45309 8px,
+        #1a202c 8px,
+        #1a202c 16px
+      );
+    }
+
+    .clean-card {
+      background: #141822;
+      border: 1px solid #262e3d;
+    }
+
+    .clean-card-subtle {
+      background: #10141d;
+      border: 1px solid #1f2633;
+    }
+
+    /* Traffic Light Housing */
+    .traffic-light-box {
+      background: #090b10;
+      border: 1px solid #2a3242;
+    }
+
+    .traffic-lamp {
+      transition: all 0.25s ease;
+      opacity: 0.25;
+    }
+
+    .traffic-lamp.active-red {
+      opacity: 1;
+      background-color: #dc2626 !important;
+      box-shadow: 0 0 10px rgba(220, 38, 38, 0.7);
+    }
+
+    .traffic-lamp.active-amber {
+      opacity: 1;
+      background-color: #d97706 !important;
+      box-shadow: 0 0 10px rgba(217, 119, 6, 0.7);
+    }
+
+    .traffic-lamp.active-green {
+      opacity: 1;
+      background-color: #16a34a !important;
+      box-shadow: 0 0 10px rgba(22, 163, 74, 0.7);
+    }
+
+    #skeleton3dContainer canvas {
+      width: 100% !important;
+      height: 100% !important;
+      border-radius: 0.5rem;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Top Caution Stripe -->
+  <div class="h-1 w-full road-stripe"></div>
+
+  <!-- ═════════════════════════════════════════════════════════════ -->
+  <!-- MINIMAL TOP BAR                                               -->
+  <!-- ═════════════════════════════════════════════════════════════ -->
+  <header class="border-b border-border/70 bg-surface/95 sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 h-13 py-2.5 flex items-center justify-between">
+      
+      <!-- Brand & Label -->
+      <a href="#hero" class="flex items-center space-x-3 group">
+        <!-- Unique Custom Road Sensory Radar Emblem -->
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-950/70 via-slate-900 to-black border border-amber-500/40 flex items-center justify-center shadow-md group-hover:border-amber-400/70 transition-all">
+          <svg viewBox="0 0 32 32" class="w-6 h-6" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Road Horizon Perspective (Converging highway) -->
+            <path d="M7 26L13.5 11H18.5L25 26" stroke="#b45309" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Highway Lane Markings (Dashed road center line) -->
+            <path d="M16 26V21M16 17V13" stroke="#f8fafc" stroke-width="1.8" stroke-linecap="round"/>
+            <!-- Sensory Radar Waves / Pulse Broadcast -->
+            <path d="M8 8.5C12.8 4.8 19.2 4.8 24 8.5" stroke="#d97706" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M11 11C14 8.8 18 8.8 21 11" stroke="#fbbf24" stroke-width="1.4" stroke-linecap="round"/>
+            <!-- Vision Sensor Pupil / Keypoint Hub -->
+            <circle cx="16" cy="11.5" r="2.5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+            <!-- Road Baseplate Foundation -->
+            <line x1="5" y1="26" x2="27" y2="26" stroke="#d97706" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="flex items-baseline gap-2.5">
+          <span class="text-xl sm:text-2xl font-bold tracking-tight text-white">
+            TRAXION <span class="text-amber-500">AI</span>
+          </span>
+          <span class="text-xs text-slate-400 font-normal hidden md:inline">
+            (Intelligent Road & Fall Kinematics)
+          </span>
+        </div>
+      </a>
+
+      <!-- Right Action: Clean Direct Emergency Button -->
+      <div class="flex items-center gap-3">
+        <!-- Status indicator (preserves IDs for app.js) -->
+        <div id="navStatusBadge" class="flex items-center gap-1.5 text-xs px-2 py-0.5 rounded bg-emerald-950/40 border border-emerald-800 text-emerald-300">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span id="navStatusText">System Ready</span>
+        </div>
+
+        <!-- Research Paper Links -->
+        <a href="/static/downloads/Traxion_AI_Research_Paper.pdf" target="_blank" download class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 transition-all">
+          <i data-lucide="file-text" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span>Paper (PDF)</span>
+        </a>
+        <a href="/static/downloads/Traxion_AI_Research_Paper.docx" target="_blank" download class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 transition-all">
+          <i data-lucide="file-edit" class="w-3.5 h-3.5 text-blue-400"></i>
+          <span>Docx</span>
+        </a>
+
+        <a href="tel:108" class="flex items-center gap-1.5 px-3 py-1 rounded bg-red-800 hover:bg-red-700 text-white text-xs font-bold transition-all border border-red-700">
+          <i data-lucide="phone" class="w-3.5 h-3.5"></i>
+          <span>Ambulance: 108</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═════════════════════════════════════════════════════════════ -->
+  <!-- HERO SECTION: Compact & Precise                              -->
+  <!-- ═════════════════════════════════════════════════════════════ -->
+  <section id="hero" class="pt-6 pb-4 px-4 max-w-6xl mx-auto w-full">
+    <div class="clean-card rounded-xl p-5 sm:p-6 border border-border">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div class="max-w-2xl">
+          <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-amber-950/40 border border-amber-800/60 text-amber-400 text-xs mb-2">
+            <span>Road Safety & Kinematics Monitor</span>
+          </div>
+          <h1 class="text-lg sm:text-xl font-bold text-white tracking-tight">
+            Autonomous Posture & Accident Detection System
+          </h1>
+          <p class="text-xs sm:text-sm text-slate-300 mt-1 leading-relaxed">
+            Computer-vision tracking of 17 body keypoints to identify pedestrian falls, roadway collapses, and vehicle collisions with immediate emergency ambulance dispatch.
+          </p>
+        </div>
+
+        <!-- Compact Key Stats -->
+        <div class="flex items-center gap-2 text-xs">
+          <div class="px-3 py-2 rounded clean-card-subtle text-center">
+            <span class="font-bold text-white block">17</span>
+            <span class="text-[11px] text-slate-400">Keypoints</span>
+          </div>
+          <div class="px-3 py-2 rounded clean-card-subtle text-center">
+            <span class="font-bold text-amber-400 block">&lt;40ms</span>
+            <span class="text-[11px] text-slate-400">Inference</span>
+          </div>
+          <div class="px-3 py-2 rounded clean-card-subtle text-center">
+            <span class="font-bold text-emerald-400 block">108 / 1033</span>
+            <span class="text-[11px] text-slate-400">Dispatch</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════════════════════════════════════════════════════ -->
+  <!-- VISION STUDIO: 3D Twin & Detection Controls                  -->
+  <!-- ═════════════════════════════════════════════════════════════ -->
+  <section id="studio" class="max-w-6xl w-full mx-auto px-4 py-2">
+    
+    <!-- Traffic Signal & Mode Bar -->
+    <div class="clean-card rounded-xl p-3 mb-4 flex flex-wrap items-center justify-between gap-3">
+      <!-- Traffic Light Signal -->
+      <div class="flex items-center gap-2.5">
+        <div class="traffic-light-box rounded px-2 py-1 flex items-center gap-1.5">
+          <span id="lightRed" class="w-2.5 h-2.5 rounded-full bg-red-700 traffic-lamp" title="Critical Fall"></span>
+          <span id="lightAmber" class="w-2.5 h-2.5 rounded-full bg-amber-600 traffic-lamp" title="Abnormal Lean"></span>
+          <span id="lightGreen" class="w-2.5 h-2.5 rounded-full bg-emerald-600 traffic-lamp active-green" title="Nominal Posture"></span>
+        </div>
+        <div>
+          <span id="trafficSignalText" class="text-xs font-bold text-emerald-400">SIGNAL: NOMINAL UPRIGHT</span>
+        </div>
+      </div>
+
+      <!-- Mode Selector -->
+      <div class="flex items-center p-0.5 rounded bg-void border border-border text-xs">
+        <button id="modeBtnCamera" onclick="switchMode('camera')" class="px-3 py-1 rounded bg-amber-900/30 text-amber-300 font-bold border border-amber-800/50 transition-all">
+          Live Camera
+        </button>
+        <button id="modeBtnVideo" onclick="switchMode('video')" class="px-3 py-1 rounded text-slate-400 hover:text-white transition-all">
+          Upload Video
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Grid: Left 3D Twin, Right Vision Output -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+      
+      <!-- LEFT: 3D Anatomical Skeletal Model (5 Cols) -->
+      <div class="lg:col-span-5 flex flex-col space-y-3">
+        <div class="clean-card rounded-xl p-4 flex flex-col relative">
+          
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-300">
+              3D Skeletal Twin
+            </h2>
+            <span class="text-[11px] text-slate-400">Drag to rotate 360°</span>
+          </div>
+
+          <!-- 3D WebGL Canvas Container -->
+          <div id="skeleton3dContainer" class="w-full h-72 sm:h-80 bg-void rounded border border-border flex items-center justify-center"></div>
+
+          <!-- 4 Zone Status Badges -->
+          <div class="grid grid-cols-4 gap-1.5 mt-3 text-center text-xs">
+            <div id="zoneHead" class="p-1.5 rounded bg-void border border-border">
+              <span class="text-[10px] text-slate-400 block">HEAD</span>
+              <span id="zoneHeadText" class="text-emerald-400 font-bold text-xs">NORMAL</span>
+            </div>
+            <div id="zoneSpine" class="p-1.5 rounded bg-void border border-border">
+              <span class="text-[10px] text-slate-400 block">SPINE</span>
+              <span id="zoneSpineText" class="text-emerald-400 font-bold text-xs">NORMAL</span>
+            </div>
+            <div id="zoneUpper" class="p-1.5 rounded bg-void border border-border">
+              <span class="text-[10px] text-slate-400 block">ARMS</span>
+              <span id="zoneUpperText" class="text-emerald-400 font-bold text-xs">NORMAL</span>
+            </div>
+            <div id="zoneLower" class="p-1.5 rounded bg-void border border-border">
+              <span class="text-[10px] text-slate-400 block">LEGS</span>
+              <span id="zoneLowerText" class="text-emerald-400 font-bold text-xs">NORMAL</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Telemetry Status Card -->
+        <div id="postureCard" class="clean-card rounded-xl p-3 flex items-center justify-between border border-border">
+          <div>
+            <span class="text-[10px] uppercase text-slate-400 block">Current Posture</span>
+            <span id="telemetryPosture" class="text-sm font-bold text-white">AWAITING DETECTION</span>
+          </div>
+          <div class="text-right">
+            <span id="telemetryRisk" class="text-xs font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300">STANDBY</span>
+            <span id="telemetryAngle" class="text-[11px] text-slate-400 block mt-0.5">Torso: --°</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Active Viewport (7 Cols) -->
+      <div class="lg:col-span-7 flex flex-col space-y-3">
+        
+        <!-- MODE 1: LIVE CAMERA -->
+        <div id="viewModeCamera" class="space-y-3">
+          <div class="clean-card rounded-xl p-4 flex flex-col">
+            
+            <!-- Controls Bar -->
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <div class="flex items-center gap-2 text-xs">
+                <span id="liveIndicatorDot" class="w-2 h-2 rounded-full bg-slate-600"></span>
+                <span class="font-bold text-slate-300">Camera Feed</span>
+                <span id="liveFpsText" class="text-amber-400 ml-1">-- FPS</span>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button id="toggleCamBtn" onclick="toggleWebcam()" class="px-3 py-1 rounded bg-amber-800/80 hover:bg-amber-700 text-white text-xs font-bold transition-all">
+                  <span id="toggleCamText">Start Camera</span>
+                </button>
+
+                <button id="recordBtn" onclick="toggleRecording()" disabled class="px-3 py-1 rounded bg-slate-800 text-slate-500 text-xs transition-all cursor-not-allowed">
+                  <span id="recordBtnText">Record</span>
+                </button>
+
+                <button id="snapBtn" onclick="takeSnapshot()" disabled class="px-2.5 py-1 rounded bg-slate-800 text-slate-400 hover:text-white text-xs transition-all disabled:opacity-40" title="Take Snapshot">
+                  <i data-lucide="camera" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Video & Canvas Viewport -->
+            <div class="relative w-full aspect-[4/3] bg-black rounded overflow-hidden border border-border flex items-center justify-center">
+              <video id="webcamVideo" playsinline class="hidden"></video>
+              <canvas id="cameraCanvas" class="w-full h-full object-contain z-10"></canvas>
+
+              <!-- Recording Badge -->
+              <div id="recordingBadge" class="hidden absolute top-2 left-2 z-30 flex items-center gap-1.5 bg-red-900/90 text-white text-xs px-2.5 py-0.5 rounded">
+                <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                <span id="recordingTimer">REC 00:00</span>
+              </div>
+
+              <!-- Standby Placeholder -->
+              <div id="cameraPlaceholder" class="absolute inset-0 z-20 flex flex-col items-center justify-center text-slate-400 p-4 text-center">
+                <i data-lucide="camera" class="w-8 h-8 mb-1.5 text-slate-600"></i>
+                <p class="text-xs font-bold text-slate-300">Camera Standby</p>
+                <p class="text-[11px] text-slate-500 mt-0.5">Click 'Start Camera' to initiate keypoint posture detection</p>
+              </div>
+            </div>
+
+            <!-- Recorded Clip Notification -->
+            <div id="recordedVideoBox" class="hidden mt-3 p-2.5 rounded bg-void border border-border flex items-center justify-between text-xs">
+              <div class="flex items-center gap-2">
+                <i data-lucide="check" class="w-4 h-4 text-emerald-400"></i>
+                <span id="recordedInfo" class="text-slate-300">Clip recorded successfully</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="playRecordedClip()" class="px-2.5 py-1 rounded bg-slate-800 text-slate-300 hover:text-white">
+                  Play
+                </button>
+                <a id="downloadRecordBtn" download="RoadSentry_Record.webm" class="px-2.5 py-1 rounded bg-amber-800/80 text-white font-bold hover:bg-amber-700">
+                  Download
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODE 2: VIDEO UPLOAD -->
+        <div id="viewModeVideo" class="space-y-3 hidden">
+          <div class="clean-card rounded-xl p-4 flex flex-col">
+            
+            <!-- Dropzone -->
+            <div id="videoDropArea" class="border border-dashed border-slate-700 hover:border-amber-600 bg-void rounded p-6 text-center cursor-pointer transition-all flex flex-col items-center justify-center mb-3">
+              <input type="file" id="videoFileInput" accept="video/mp4,video/avi,video/quicktime,video/webm" class="hidden" />
+              <i data-lucide="upload" class="w-6 h-6 text-amber-500 mb-1.5"></i>
+              <p class="text-xs font-bold text-slate-200">Drag & drop crash footage or click to browse</p>
+              <p class="text-[11px] text-slate-500 mt-0.5">MP4, MOV, WEBM (H.264 format)</p>
+              
+              <button onclick="loadSampleVideoDirect(event)" class="mt-2.5 px-3 py-1 rounded bg-slate-800 hover:bg-slate-700 text-xs text-amber-400 border border-slate-700 flex items-center gap-1">
+                <span>Load Sample Crash Video</span>
+              </button>
+            </div>
+
+            <!-- Upload Progress -->
+            <div id="videoUploadProgress" class="hidden p-2.5 rounded bg-void border border-border mb-3 space-y-1.5 text-xs">
+              <div class="flex justify-between text-slate-300">
+                <span>Analyzing Kinematics...</span>
+                <span id="videoProgressText" class="text-amber-400 font-bold">PROCESSING</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-1 overflow-hidden">
+                <div id="videoProgressBar" class="bg-amber-600 h-full w-2/3"></div>
+              </div>
+            </div>
+
+            <!-- Video Player -->
+            <div class="relative w-full aspect-video bg-black rounded overflow-hidden border border-border flex items-center justify-center">
+              <video id="uploadedVideoPlayer" controls playsinline preload="auto" class="w-full h-full object-contain hidden z-10"></video>
+              <div id="uploadedVideoPlaceholder" class="text-center p-4 text-slate-500">
+                <i data-lucide="film" class="w-8 h-8 mx-auto mb-1 text-slate-700"></i>
+                <p class="text-xs font-bold text-slate-400">No Video Loaded</p>
+                <p class="text-[11px] text-slate-600">Upload video or use sample footage above</p>
+              </div>
+            </div>
+
+            <!-- Action Bar -->
+            <div id="videoActionBar" class="hidden mt-3 p-2.5 rounded bg-void border border-border flex flex-wrap items-center justify-between gap-2 text-xs">
+              <div class="flex items-center gap-2">
+                <span id="videoStatusPill" class="font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300">
+                  ANALYSIS COMPLETE
+                </span>
+                <span id="videoSummaryMeta" class="text-slate-400 text-[11px]"></span>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="replayAnalyzedVideo()" class="px-2.5 py-1 rounded bg-slate-800 text-slate-300 hover:text-white">
+                  Replay
+                </button>
+                <a id="downloadVideoBtn" download="RoadSentry_Analyzed.mp4" href="#" class="px-2.5 py-1 rounded bg-amber-800/80 hover:bg-amber-700 text-white font-bold">
+                  Download Video
+                </a>
+              </div>
+            </div>
+
+            <!-- Timeline -->
+            <div id="timelineEventsContainer" class="mt-3 space-y-1.5 hidden text-xs">
+              <div class="flex items-center justify-between text-slate-400">
+                <span class="font-bold">Collision Timeline</span>
+                <span class="text-[11px]">Click to jump</span>
+              </div>
+              <div id="timelineList" class="space-y-1 max-h-40 overflow-y-auto pr-1"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════════════════════════════════════════════════════ -->
+  <!-- PRECISE TRAUMA CLASSIFICATION MATRIX                          -->
+  <!-- ═════════════════════════════════════════════════════════════ -->
+  <section id="trauma-matrix" class="max-w-6xl w-full mx-auto px-4 py-4">
+    <div class="clean-card rounded-xl p-4 border border-border">
+      <h2 class="text-sm sm:text-base font-bold text-white mb-1">
+        Trauma & Impact Classification
+      </h2>
+      <p class="text-xs text-slate-400 mb-3">
+        Standard biomechanical kinematic thresholds for emergency triage.
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+        <div class="p-3 rounded bg-void border border-border">
+          <span class="font-bold text-slate-200 block mb-1">Head / Cranial</span>
+          <p class="text-slate-400 text-[11px]">
+            Cranial keypoints descend below shoulder line. Priority emergency triage.
+          </p>
+        </div>
+
+        <div class="p-3 rounded bg-void border border-border">
+          <span class="font-bold text-slate-200 block mb-1">Spine & Torso</span>
+          <p class="text-slate-400 text-[11px]">
+            Torso angle tilt &lt; 38° relative to road plane. Spinal immobilization indicator.
+          </p>
+        </div>
+
+        <div class="p-3 rounded bg-void border border-border">
+          <span class="font-bold text-slate-200 block mb-1">Lower Extremities</span>
+          <p class="text-slate-400 text-[11px]">
+            Acute knee articulation (&lt; 42°) signaling ground collapse or impact.
+          </p>
+        </div>
+
+        <div class="p-3 rounded bg-void border border-border">
+          <span class="font-bold text-slate-200 block mb-1">Upper Extremities</span>
+          <p class="text-slate-400 text-[11px]">
+            Elbow angle (&lt; 35°) indicating brace impact or tumbling motion.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════════════════════════════════════════════════════ -->
+  <!-- EMERGENCY AMBULANCE DIRECTORY & SOS DISPATCH HUB              -->
+  <!-- ═════════════════════════════════════════════════════════════ -->
+  <section id="ambulance-hub" class="max-w-6xl w-full mx-auto px-4 py-4">
+    <div class="clean-card rounded-xl p-5 border border-border">
+      
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div>
+          <h2 class="text-sm sm:text-base font-bold text-white">
+            Emergency Medical & Ambulance Directory
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">
+            Immediate one-click dialing and automated highway dispatch.
+          </p>
+        </div>
+
+        <button onclick="triggerEmergencySOS()" class="px-3.5 py-1.5 rounded bg-red-800 hover:bg-red-700 text-white text-xs font-bold transition-all">
+          Trigger Automated SOS
+        </button>
+      </div>
+
+      <!-- Quick Dial Numbers -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-4 text-xs">
+        <a href="tel:108" class="p-3 rounded bg-void border border-border hover:border-red-700 transition-all flex flex-col justify-between">
+          <span class="text-slate-400 text-[11px]">AMBULANCE</span>
+          <span class="text-lg font-bold text-white mt-1">108</span>
+          <span class="text-[10px] text-red-400 font-bold mt-1">Click to Dial &rarr;</span>
+        </a>
+
+        <a href="tel:1033" class="p-3 rounded bg-void border border-border hover:border-amber-600 transition-all flex flex-col justify-between">
+          <span class="text-slate-400 text-[11px]">HIGHWAY HELPLINE</span>
+          <span class="text-lg font-bold text-white mt-1">1033</span>
+          <span class="text-[10px] text-amber-400 font-bold mt-1">Click to Dial &rarr;</span>
+        </a>
+
+        <a href="tel:100" class="p-3 rounded bg-void border border-border hover:border-slate-500 transition-all flex flex-col justify-between">
+          <span class="text-slate-400 text-[11px]">POLICE PATROL</span>
+          <span class="text-lg font-bold text-white mt-1">100</span>
+          <span class="text-[10px] text-slate-300 font-bold mt-1">Click to Dial &rarr;</span>
+        </a>
+
+        <a href="tel:102" class="p-3 rounded bg-void border border-border hover:border-amber-600 transition-all flex flex-col justify-between">
+          <span class="text-slate-400 text-[11px]">TRAUMA HELPLINE</span>
+          <span class="text-lg font-bold text-white mt-1">102</span>
+          <span class="text-[10px] text-amber-400 font-bold mt-1">Click to Dial &rarr;</span>
+        </a>
+      </div>
+
+      <!-- Live Dispatch Status Card -->
+      <div id="sosDispatchCard" class="hidden mb-4 p-3 rounded bg-void border border-red-800 text-xs">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <p class="font-bold text-white">
+              <span>EMERGENCY SOS DISPATCHED:</span>
+              <span id="sosDispatchId" class="text-red-400 ml-1">SOS-9941</span>
+            </p>
+            <p class="text-[11px] text-slate-400 mt-0.5" id="sosUnitsAssigned">
+              Assigned: ALS Trauma Team • Estimated Arrival: 6 mins
+            </p>
+          </div>
+          <a href="tel:108" class="px-3 py-1 rounded bg-red-800 text-white font-bold text-xs">
+            Confirm with 108
+          </a>
+        </div>
+      </div>
+
+      <!-- Nearby Hospital Facilities -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 text-xs">
+        <div class="p-3 rounded bg-void border border-border flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <span class="font-bold text-white">Apex Trauma Center</span>
+              <span class="text-[10px] text-emerald-400 bg-emerald-950/60 px-1.5 py-0.5 rounded">6m ETA</span>
+            </div>
+            <p class="text-slate-400 text-[11px]">2.4 km away • 24/7 Trauma Unit</p>
+          </div>
+          <a href="tel:108" class="text-amber-400 text-[11px] mt-2 block hover:underline">Call Hospital &rarr;</a>
+        </div>
+
+        <div class="p-3 rounded bg-void border border-border flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <span class="font-bold text-white">Highway Rapid Unit #04</span>
+              <span class="text-[10px] text-emerald-400 bg-emerald-950/60 px-1.5 py-0.5 rounded">8m ETA</span>
+            </div>
+            <p class="text-slate-400 text-[11px]">3.8 km away • Mobile Resuscitation</p>
+          </div>
+          <a href="tel:1033" class="text-amber-400 text-[11px] mt-2 block hover:underline">Contact Unit &rarr;</a>
+        </div>
+
+        <div class="p-3 rounded bg-void border border-border flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <span class="font-bold text-white">Metro Orthopedic Hospital</span>
+              <span class="text-[10px] text-amber-400 bg-amber-950/60 px-1.5 py-0.5 rounded">11m ETA</span>
+            </div>
+            <p class="text-slate-400 text-[11px]">5.1 km away • Spinal Triage</p>
+          </div>
+          <a href="tel:102" class="text-amber-400 text-[11px] mt-2 block hover:underline">Call Facility &rarr;</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═════════════════════════════════════════════════════════════ -->
+  <!-- EMERGENCY INTERCEPT MODAL                                     -->
+  <!-- ═════════════════════════════════════════════════════════════ -->
+  <div id="emergencyOverlayModal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+    <div class="clean-card max-w-md w-full rounded-xl p-5 border border-red-700 relative text-xs">
+      
+      <div class="flex items-center justify-between mb-3 border-b border-border pb-2">
+        <span class="text-red-400 font-bold">CRITICAL COLLISION DETECTED</span>
+        <button onclick="closeEmergencyModal()" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="my-3 text-slate-300">
+        <p id="emergencyModalDesc">
+          Horizontal fall or severe impact posture identified.
+        </p>
+      </div>
+
+      <div class="p-2.5 rounded bg-void border border-border space-y-1 text-[11px]">
+        <div class="flex justify-between text-slate-400">
+          <span>Highway Location:</span>
+          <span class="text-white font-bold" id="emergencyModalLoc">Sector 14 Corridor</span>
+        </div>
+        <div class="flex justify-between text-slate-400">
+          <span>Nearest Facility:</span>
+          <span class="text-white font-bold">Apex Level-1 Trauma (ETA 6m)</span>
+        </div>
+        <div class="flex justify-between text-slate-400">
+          <span>Automated Dispatch:</span>
+          <span class="text-amber-400 font-bold" id="emergencyModalTimer">Dispatches in 10s</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 mt-4 font-bold">
+        <button onclick="closeEmergencyModal()" class="px-3 py-2 rounded bg-slate-800 text-slate-300 hover:bg-slate-700">
+          Cancel
+        </button>
+        <a href="tel:108" class="px-3 py-2 rounded bg-red-800 hover:bg-red-700 text-white flex items-center justify-center gap-1.5">
+          <span>Call 108</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════════════════════════════════════════════════════════════ -->
+  <!-- MINIMAL FOOTER                                                -->
+  <!-- ═════════════════════════════════════════════════════════════ -->
+  <footer class="border-t border-border/70 mt-8 py-4 bg-surface/60 text-xs text-slate-500">
+    <div class="max-w-6xl mx-auto px-4 flex flex-wrap items-center justify-between gap-2">
+      <div>TRAXION AI — Autonomous Road Accident & Pedestrian Fall Intelligence</div>
+      <div>Emergency Services: Dial 108 / 1033</div>
+    </div>
+  </footer>
+
+  <!-- Client Script -->
+  <script src="/static/app.js"></script>
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>
