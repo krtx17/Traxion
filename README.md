@@ -429,6 +429,7 @@ Traxion/
 * Python 3.10 or higher
 * Git
 * FFmpeg (recommended for video transcoding)
+* Node.js (optional, for frontend tooling)
 
 ### 1. Clone Repository
 ```bash
