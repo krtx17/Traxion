@@ -28,3 +28,13 @@ data/outputs/*
 Thumbs.db
 .vscode/
 .idea/
+
+# Research papers & dossiers (do not track)
+*.pdf
+*.docx
+*dossier*
+*Dossier*
+*manuscript*
+*Manuscript*
+*Research_Paper*
+frontend/downloads/
