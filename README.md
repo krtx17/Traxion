@@ -594,4 +594,9 @@ tests/test_security_deep_scan.py         11 passed (Path traversal, IDOR, secret
 ## 25. License
 
 This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
-All model weights, source code, and architectural documentation are free for academic, personal, and commercial research.
+All model weights, source code, and architectural documentation are free for academic, personal, and commercial research.- - -  
+  
+ # #   2 6 .   C o n t a c t  
+  
+ F o r   q u e s t i o n s ,   f e e d b a c k ,   o r   c o l l a b o r a t i o n   o n   T r a x i o n ,   f e e l   f r e e   t o   r e a c h   o u t   v i a   G i t H u b   i s s u e s   o r   c o n n e c t   w i t h   m e   o n   L i n k e d I n .  
+ 
