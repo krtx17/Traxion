@@ -26,7 +26,7 @@ def authenticated_client():
 def admin_client():
     admin_res = client.post("/api/auth/login", json={
         "username": "admin",
-        "password": "Admin@RoadSentry2026"
+        "password": "Admin@Traxion2026"
     })
     token = admin_res.json()["token"]
     headers = {"Authorization": f"Bearer {token}"}
@@ -37,14 +37,14 @@ class TestSystemAndRootEndpoints:
         res = client.get("/")
         assert res.status_code == 200
         assert "text/html" in res.headers["content-type"]
-        assert "ROADSENTRY" in res.text
+        assert "TRAXION" in res.text
 
     def test_health_check(self):
         res = client.get("/api/health")
         assert res.status_code == 200
         data = res.json()
         assert data["status"] == "online"
-        assert data["system"] == "RoadSentry AI"
+        assert data["system"] == "Traxion"
         assert data["yolo_pose"] == "ready"
         assert data["ml_classifier_loaded"] is True
         assert data["database"] == "sqlite_ready"

@@ -22,6 +22,8 @@ data/uploads/*
 !data/uploads/.gitkeep
 data/outputs/*
 !data/outputs/.gitkeep
+data/*.db
+*.db
 
 # OS / Editor files
 .DS_Store

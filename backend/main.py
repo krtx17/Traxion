@@ -23,9 +23,9 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 # FastAPI Application Setup
 # -------------------------------------------------------------
 app = FastAPI(
-    title="Traxion AI - Computer Vision Road Safety & Trauma Intelligence",
+    title="Traxion - Real-Time Biomechanical Movement & Posture Intelligence",
     version="3.0.0",
-    description="Real-Time 17-Keypoint Biomechanical Accident Detection & Emergency Triage"
+    description="Real-Time 17-Keypoint Biomechanical Movement & Risk Intelligence"
 )
 
 app.add_middleware(
@@ -66,13 +66,13 @@ async def root():
     index_file = os.path.join(FRONTEND_DIR, "index.html")
     if os.path.exists(index_file):
         return FileResponse(index_file)
-    return {"message": "Traxion AI API is Running."}
+    return {"message": "Traxion API is Running."}
 
 @app.get("/api/health")
 async def health():
     return {
         "status": "online",
-        "system": "Traxion AI",
+        "system": "Traxion",
         "yolo_pose": "ready",
         "ml_classifier_loaded": engine.classifier is not None,
         "database": "sqlite_ready"

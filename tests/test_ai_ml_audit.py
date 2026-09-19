@@ -4,7 +4,7 @@ import joblib
 import numpy as np
 import pytest
 from ultralytics import YOLO
-from backend.pipeline import RoadSentryAIEngine
+from backend.pipeline import TraxionEngine
 from backend.kinematics import extract_biomechanical_features
 
 class TestAIMLModelIntegrity:
@@ -49,7 +49,7 @@ class TestAIMLModelIntegrity:
 
     def test_edge_case_solid_black_frame(self):
         """Total camera occlusion / night time blackout."""
-        engine = RoadSentryAIEngine(yolo_model="yolo11n-pose.pt", classifier_path=os.path.join("models", "posture_classifier_95acc.pkl"))
+        engine = TraxionEngine(yolo_model="yolo11n-pose.pt", classifier_path=os.path.join("models", "posture_classifier_95acc.pkl"))
         black_frame = np.zeros((480, 640, 3), dtype=np.uint8)
         _, buf = cv2.imencode(".jpg", black_frame)
 
@@ -60,7 +60,7 @@ class TestAIMLModelIntegrity:
 
     def test_edge_case_solid_white_frame(self):
         """Total glare / overexposure."""
-        engine = RoadSentryAIEngine(yolo_model="yolo11n-pose.pt", classifier_path=os.path.join("models", "posture_classifier_95acc.pkl"))
+        engine = TraxionEngine(yolo_model="yolo11n-pose.pt", classifier_path=os.path.join("models", "posture_classifier_95acc.pkl"))
         white_frame = np.ones((480, 640, 3), dtype=np.uint8) * 255
         _, buf = cv2.imencode(".jpg", white_frame)
 
@@ -69,7 +69,7 @@ class TestAIMLModelIntegrity:
 
     def test_edge_case_random_gaussian_noise(self):
         """Static noise / signal interference."""
-        engine = RoadSentryAIEngine(yolo_model="yolo11n-pose.pt", classifier_path=os.path.join("models", "posture_classifier_95acc.pkl"))
+        engine = TraxionEngine(yolo_model="yolo11n-pose.pt", classifier_path=os.path.join("models", "posture_classifier_95acc.pkl"))
         noise = np.random.randint(0, 256, (480, 640, 3), dtype=np.uint8)
         _, buf = cv2.imencode(".jpg", noise)
 
@@ -78,7 +78,7 @@ class TestAIMLModelIntegrity:
 
     def test_edge_case_corrupted_frame_bytes(self):
         """Corrupted network packet transmission."""
-        engine = RoadSentryAIEngine(yolo_model="yolo11n-pose.pt", classifier_path=os.path.join("models", "posture_classifier_95acc.pkl"))
+        engine = TraxionEngine(yolo_model="yolo11n-pose.pt", classifier_path=os.path.join("models", "posture_classifier_95acc.pkl"))
         corrupted_bytes = b"garbage_data_not_an_image_at_all_12345"
 
         result = engine.process_frame(corrupted_bytes)
@@ -87,7 +87,7 @@ class TestAIMLModelIntegrity:
 
     def test_real_sample_fall_inference(self):
         """Verifies detection on real verified road accident / fall image."""
-        engine = RoadSentryAIEngine(yolo_model="yolo11n-pose.pt", classifier_path=os.path.join("models", "posture_classifier_95acc.pkl"))
+        engine = TraxionEngine(yolo_model="yolo11n-pose.pt", classifier_path=os.path.join("models", "posture_classifier_95acc.pkl"))
         sample_path = os.path.join("frontend", "samples", "sample_fall.jpg")
         with open(sample_path, "rb") as f:
             img_bytes = f.read()

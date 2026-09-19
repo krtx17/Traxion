@@ -7,7 +7,7 @@ import bcrypt
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, "data")
-DB_PATH = os.path.join(DATA_DIR, "roadsentry.db")
+DB_PATH = os.path.join(DATA_DIR, "traxion.db")
 os.makedirs(DATA_DIR, exist_ok=True)
 
 def get_db_connection():
@@ -65,10 +65,10 @@ def init_db():
         cursor.execute("SELECT id FROM users WHERE username = 'admin'")
         if not cursor.fetchone():
             default_salt = bcrypt.gensalt(rounds=12)
-            admin_pwd_hash = bcrypt.hashpw("Admin@RoadSentry2026".encode('utf-8'), default_salt).decode('utf-8')
+            admin_pwd_hash = bcrypt.hashpw("Admin@Traxion2026".encode('utf-8'), default_salt).decode('utf-8')
             cursor.execute("""
                 INSERT INTO users (username, email, password_hash, role)
-                VALUES ('admin', 'admin@roadsentry.ai', ?, 'admin')
+                VALUES ('admin', 'admin@traxion.ai', ?, 'admin')
             """, (admin_pwd_hash,))
             
         conn.commit()

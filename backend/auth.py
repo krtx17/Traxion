@@ -7,7 +7,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from backend import database
 
 # Configuration
-SECRET_KEY = os.environ.get("ROADSENTRY_SECRET_KEY", "roadsentry_super_secure_jwt_secret_key_2026_cv")
+SECRET_KEY = os.environ.get("TRAXION_SECRET_KEY", os.environ.get("ROADSENTRY_SECRET_KEY", "traxion_super_secure_jwt_secret_key_2026_cv"))
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_DAYS = 7
 

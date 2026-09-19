@@ -51,7 +51,7 @@ ax.annotate("", xy=(8.85, 2.75), xytext=(8.55, 2.75), arrowprops=arrow_props)
 ax.annotate("", xy=(11.55, 4.2), xytext=(11.55, 3.2), arrowprops=arrow_props)
 ax.annotate("", xy=(11.55, 1.3), xytext=(11.55, 2.3), arrowprops=arrow_props)
 
-plt.title("Figure 1: End-to-End RoadSentry AI Architectural Pipeline for Road Accident Kinematics", fontsize=13, fontweight="bold", pad=14)
+plt.title("Figure 1: End-to-End Traxion Architectural Pipeline for Biomechanical Kinematics", fontsize=13, fontweight="bold", pad=14)
 plt.tight_layout()
 plt.savefig("paper_assets/fig1_pipeline_large.png", dpi=300, bbox_inches="tight")
 plt.close()
@@ -117,7 +117,7 @@ for idx, (x, y, z) in kpts_upright.items():
 ax2 = fig.add_subplot(1, 3, 2, projection='3d')
 plot_3d_skeleton(ax2, kpts_lean, bones, "(B) Abnormal Lean / Skid\n[θ_torso = 51.5°, Signal: Amber]", color_normal="#d97706")
 
-# (C) Catastrophic Road Fall (Prostrated on Asphalt)
+# (C) Catastrophic Fall (Ground Collapse)
 kpts_fall = {
     0: (1.5, 0.1, -1.4), 1: (1.4, 0.15, -1.35), 2: (1.4, 0.05, -1.35), 3: (1.3, 0.2, -1.4), 4: (1.3, 0.0, -1.4),
     5: (1.0, 0.35, -1.45), 6: (1.0, -0.35, -1.45), 7: (0.6, 0.55, -1.5), 8: (0.6, -0.55, -1.5),
@@ -125,17 +125,17 @@ kpts_fall = {
     13: (-0.6, 0.28, -1.6), 14: (-0.6, -0.28, -1.6), 15: (-1.2, 0.3, -1.65), 16: (-1.2, -0.3, -1.65)
 }
 ax3 = fig.add_subplot(1, 3, 3, projection='3d')
-plot_3d_skeleton(ax3, kpts_fall, bones, "(C) Catastrophic Road Fall\n[θ_torso = 14.8°, Signal: RED ALERT]",
+plot_3d_skeleton(ax3, kpts_fall, bones, "(C) Severe Fall / Ground Collapse\n[θ_torso = 14.8°, Signal: RED ALERT]",
                   color_normal="#94a3b8", color_alert="#dc2626", impacted=[0, 1, 2, 3, 4, 5, 6, 11, 12])
 
-plt.suptitle("Figure 2: 3D Biomechanical Skeletal Digital Twin Across Upright, Lean, and Ground Collision States", fontsize=13, fontweight="bold", y=0.98)
+plt.suptitle("Figure 2: 3D Biomechanical Skeletal Digital Twin Across Upright, Lean, and Ground Collapse States", fontsize=13, fontweight="bold", y=0.98)
 plt.tight_layout()
 plt.savefig("paper_assets/fig2_3d_skeletal_twin.png", dpi=300, bbox_inches="tight")
 plt.close()
 print("Large Fig 2 (3D Twin) generated")
 
 # =============================================================
-# FIGURE 3: ROAD SENSORY AI USER INTERFACE & DISPATCH WORKFLOW
+# FIGURE 3: TRAXION USER INTERFACE & DISPATCH WORKFLOW
 # =============================================================
 fig, ax = plt.subplots(figsize=(14, 6.2), dpi=300)
 ax.set_xlim(0, 14)
@@ -149,8 +149,8 @@ ax.add_patch(window)
 # Top Bar
 topbar = patches.Rectangle((0.2, 5.65), 13.6, 0.65, facecolor="#141822", edgecolor="#2a3242", lw=1.5)
 ax.add_patch(topbar)
-ax.text(0.6, 5.95, "ROADSENTRY AI", fontsize=13, fontweight="bold", color="#ffffff")
-ax.text(2.6, 5.95, "| Postural Accident Radar & Trauma Triage", fontsize=10, color="#94a3b8")
+ax.text(0.6, 5.95, "TRAXION AI", fontsize=13, fontweight="bold", color="#ffffff")
+ax.text(2.6, 5.95, "| Real-Time Movement & Biomechanical Risk Intelligence", fontsize=10, color="#94a3b8")
 # Top Bar Right Buttons
 status_badge = patches.FancyBboxPatch((9.6, 5.8), 1.6, 0.35, boxstyle="round,pad=0.05", facecolor="#064e3b", edgecolor="#059669")
 ax.add_patch(status_badge)
@@ -158,7 +158,7 @@ ax.text(10.4, 5.95, "● System Ready", fontsize=9, fontweight="bold", color="#3
 
 sos_btn = patches.FancyBboxPatch((11.4, 5.8), 2.2, 0.38, boxstyle="round,pad=0.05", facecolor="#991b1b", edgecolor="#dc2626")
 ax.add_patch(sos_btn)
-ax.text(12.5, 5.98, "Ambulance: 108", fontsize=9.5, fontweight="bold", color="#ffffff", ha="center", va="center")
+ax.text(12.5, 5.98, "108 Triage", fontsize=9.5, fontweight="bold", color="#ffffff", ha="center", va="center")
 
 # Left Column: 3D Twin Viewport
 twin_box = patches.FancyBboxPatch((0.5, 2.3), 5.8, 3.1, boxstyle="round,pad=0.1", facecolor="#141822", edgecolor="#262e3d", lw=1.5)
@@ -210,7 +210,7 @@ for idx, (num, nlabel, nx, ncol) in enumerate([("108", "Ambulance", 6.9, "#dc262
 
 ax.text(6.9, 0.65, "Automated Dispatch ID: SOS-F2BB1D  |  Nearest: Apex Level-1 Trauma (ETA: 6m)  |  Units: ALS Unit #08", fontsize=8.5, color="#cbd5e1")
 
-plt.title("Figure 3: RoadSentry AI Comprehensive User Interface Architecture and Emergency Workflow", fontsize=13, fontweight="bold", pad=12)
+plt.title("Figure 3: Traxion Real-Time Biomechanical Movement & Kinematics User Interface Architecture", fontsize=13, fontweight="bold", pad=12)
 plt.tight_layout()
 plt.savefig("paper_assets/fig3_ui_architecture.png", dpi=300, bbox_inches="tight")
 plt.close()
@@ -304,7 +304,7 @@ metrics = ["Precision", "Recall\n(Sensitivity)", "F1-Score", "Specificity"]
 opt_flow = [82.4, 84.1, 83.2, 85.0]
 c3d = [89.6, 91.0, 90.3, 91.5]
 yolo_raw = [91.2, 92.5, 91.8, 93.0]
-roadsentry = [98.8, 99.4, 99.1, 98.6]
+traxion = [98.8, 99.4, 99.1, 98.6]
 
 x = np.arange(len(metrics))
 width = 0.2
@@ -312,10 +312,10 @@ width = 0.2
 rects1 = ax2.bar(x - 1.5*width, opt_flow, width, label='Optical Flow', color='#cbd5e1')
 rects2 = ax2.bar(x - 0.5*width, c3d, width, label='3D CNN (C3D)', color='#94a3b8')
 rects3 = ax2.bar(x + 0.5*width, yolo_raw, width, label='Raw YOLO-Pose', color='#64748b')
-rects4 = ax2.bar(x + 1.5*width, roadsentry, width, label='RoadSentry (Proposed)', color='#b45309')
+rects4 = ax2.bar(x + 1.5*width, traxion, width, label='Traxion (Proposed)', color='#0284c7')
 
 ax2.set_ylabel('Performance Metric (%)', fontsize=11, fontweight="bold")
-ax2.set_title('(B) Benchmark Metric Comparison on Severe Road Collisions', fontsize=12, fontweight="bold", pad=10)
+ax2.set_title('(B) Benchmark Metric Comparison Across Severe Movement Events', fontsize=12, fontweight="bold", pad=10)
 ax2.set_xticks(x)
 ax2.set_xticklabels(metrics, fontsize=10.5)
 ax2.set_ylim(75, 104)
@@ -325,7 +325,7 @@ ax2.grid(axis='y', linestyle='--', alpha=0.5)
 # Label proposed bars
 for bar in rects4:
     yval = bar.get_height()
-    ax2.text(bar.get_x() + bar.get_width()/2.0, yval + 0.7, f"{yval:.1f}%", ha='center', va='bottom', fontsize=9.5, fontweight="bold", color="#92400e")
+    ax2.text(bar.get_x() + bar.get_width()/2.0, yval + 0.7, f"{yval:.1f}%", ha='center', va='bottom', fontsize=9.5, fontweight="bold", color="#0284c7")
 
 plt.suptitle("Figure 5: Quantitative Evaluation, Multi-Class Confusion Matrix, and Baseline Comparative Benchmarks", fontsize=13, fontweight="bold", y=0.98)
 plt.tight_layout()

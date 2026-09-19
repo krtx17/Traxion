@@ -1,5 +1,5 @@
 // ===================================================================
-// TRAXION AI - Intelligent Road Accident & Fall Kinematics Client
+// TRAXION - Real-Time Biomechanical Movement & Risk Intelligence
 // ===================================================================
 
 const AppState = {
